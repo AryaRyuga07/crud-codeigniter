@@ -34,6 +34,8 @@ $routes->get('/', 'Pages::index');
 $routes->get('/about', 'Pages::about');
 $routes->get('/contact', 'Pages::contact');
 $routes->get('/anime', 'Anime::index');
+$routes->get('/menu', 'Menu::index');
+$routes->post('/menu', 'Menu::index');
 
 $routes->delete('/Anime/(:num)', 'Anime::delete/$1');
 $routes->get('/anime/(:any)', 'Anime::detail/$1');

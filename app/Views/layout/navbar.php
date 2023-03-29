@@ -9,6 +9,7 @@
                         <a class="navbar-brand fs-3" href="#">MyNime</a>
                         <a class="nav-link fs-5" aria-current="page" href="/">Home</a>
                         <a class="nav-link fs-5" href="/anime">Anime</a>
+                        <a class="nav-link fs-5" href="/menu">Menu</a>
                         <a class="nav-link fs-5" href="/about">About</a>
                         <a class="nav-link fs-5" href="/contact">Contact</a>
                     </div>

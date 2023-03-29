@@ -13,7 +13,7 @@ class Anime extends BaseController
     {
         $this->animeModel = new AnimeModel();
     }
-    
+
     public function index()
     {
         // $anime = $this->animeModel->findAll();
@@ -58,19 +58,37 @@ class Anime extends BaseController
                     'required' => '{field} harus diisi',
                     'is_unique' => '{field} anime sudah terdaftar'
                 ]
+            ],
+            'image' => [
+                'rules' => 'max_size[image,1024]|is_image[image]|mime_in[image,image/jpg,image/jpeg,image/png]',
+                'errors' => [
+                    'max_size' => 'Size too big',
+                    'is_image' => 'Not image',
+                    'mime_in' => 'Not image'
+                ]
             ]
         ])) {
-            $validation = \Config\Services::validation();
-            return redirect()->to('/Anime/create')->withInput()->with('validation', $validation);
+            // $validation = \Config\Services::validation();
+            // return redirect()->to('/Anime/create')->withInput()->with('validation', $validation);
+            return redirect()->to('/Anime/create')->withInput();
         }
 
-        $slug = url_title($this->request->getVar('judul'), '-', true); 
+        $fileImage = $this->request->getFile('image');
+        if ($fileImage->getError() == 4) {
+            $imgName = 'def.jpg';
+        } else {
+            $imgName = $fileImage->getRandomName();
+            $fileImage->move('img', $imgName);
+        }
+        // $imgName = $fileImage->getName();
+
+        $slug = url_title($this->request->getVar('judul'), '-', true);
         $this->animeModel->save([
             'judul' => $this->request->getVar('judul'),
             'slug' => $slug,
             'studio' => $this->request->getVar('studio'),
             'genre' => $this->request->getVar('genre'),
-            'sampul' => $this->request->getVar('image'),
+            'sampul' => $imgName,
             'audio' => $this->request->getVar('audio')
         ]);
 
@@ -81,6 +99,13 @@ class Anime extends BaseController
 
     public function delete($id)
     {
+        $anime = $this->animeModel->find($id);
+
+        if ($anime['sampul'] != 'def.jpg') {
+            unlink('img/' . $anime['sampul']);
+        }
+
+
         $this->animeModel->delete($id);
         session()->setFlashdata('pesan', 'Delete Data Success');
         return redirect()->to('/anime');
@@ -113,20 +138,41 @@ class Anime extends BaseController
                     'required' => '{field} harus diisi',
                     'is_unique' => '{field} anime sudah terdaftar'
                 ]
+            ],
+            'image' => [
+                'rules' => 'max_size[image,1024]|is_image[image]|mime_in[image,image/jpg,image/jpeg,image/png]',
+                'errors' => [
+                    'max_size' => 'Size too big',
+                    'is_image' => 'Not image',
+                    'mime_in' => 'Not image'
+                ]
             ]
         ])) {
-            $validation = \Config\Services::validation();
-            return redirect()->to('/Anime/edit/' . $this->request->getVar('slug'))->withInput()->with('validation', $validation);
+            return redirect()->to('/Anime/edit/' . $this->request->getVar('slug'))->withInput();
         }
 
-        $slug = url_title($this->request->getVar('judul'), '-', true); 
+        $imgFile = $this->request->getFile('image');
+
+        if ($imgFile->getError() == 4) {
+            $imgName = $this->request->getVar('oldImg');
+        } else {
+            $imgName = $imgFile->getRandomName();
+
+            $imgFile->move('img', $imgName);
+
+            if ($this->request->getVar('oldImg') != 'def.jpg') {
+                unlink('img/' . $this->request->getVar('oldImg'));
+            }           
+        }
+
+        $slug = url_title($this->request->getVar('judul'), '-', true);
         $this->animeModel->save([
             'id' => $id,
             'judul' => $this->request->getVar('judul'),
             'slug' => $slug,
             'studio' => $this->request->getVar('studio'),
             'genre' => $this->request->getVar('genre'),
-            'sampul' => $this->request->getVar('image'),
+            'sampul' => $imgName,
             'audio' => $this->request->getVar('audio')
         ]);
 

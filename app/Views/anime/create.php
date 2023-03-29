@@ -6,7 +6,7 @@
         <div class="col-8">
             <h2 class="my-3">Add Anime Form</h2>
 
-            <form action="/Anime/save" method="post">
+            <form action="/Anime/save" method="post" enctype="multipart/form-data">
                 <?= csrf_field(); ?>
                 <div class="row mb-3">
                     <label for="inputTitle" class="col-sm-2 col-form-label">Title</label>
@@ -31,8 +31,16 @@
                 </div>
                 <div class="row mb-3">
                     <label for="inputImg" class="col-sm-2 col-form-label">Img</label>
-                    <div class="col-sm-10">
-                        <input type="text" name="image" class="form-control" id="inputImg" autocomplete="off">
+                    <div class="col-sm-2">
+                        <img src="/img/def.jpg" class="img-thumbnail img-preview">
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="input-group mb-3">
+                            <input type="file" name="image" class="form-control <?= (validation_show_error('image') ? 'is-invalid' : ''); ?>"" id="inputImg" onchange="preview()">
+                            <div class="invalid-feedback">
+                                <?= validation_show_error('image') ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row mb-3">
